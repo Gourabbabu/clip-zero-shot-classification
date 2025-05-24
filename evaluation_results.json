@@ -1,0 +1,6 @@
+{
+  "top1_accuracy": 0.432,
+  "top5_accuracy": 0.719,
+  "num_test_images": 1000,
+  "num_classes": 100
+}
