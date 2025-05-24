@@ -1,0 +1,35 @@
+# Core dependencies
+torch>=1.9.0
+torchvision>=0.10.0
+ftfy
+regex
+tqdm
+
+# CLIP model
+git+https://github.com/openai/CLIP.git
+
+# Image processing
+Pillow>=8.3.0
+opencv-python>=4.5.0
+
+# Data science and visualization
+numpy>=1.21.0
+pandas>=1.3.0
+matplotlib>=3.4.0
+seaborn>=0.11.0
+
+# Machine learning utilities
+scikit-learn>=1.0.0
+
+# Optional: For Jupyter notebooks
+jupyter>=1.0.0
+ipywidgets>=7.6.0
+
+# Optional: For web interface
+streamlit>=1.0.0
+gradio>=3.0.0
+
+# Development tools
+pytest>=6.0.0
+black>=21.0.0
+flake8>=3.9.0
