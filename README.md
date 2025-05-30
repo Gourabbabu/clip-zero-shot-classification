@@ -91,10 +91,5 @@ Upload your image and get top-5 predicted labels instantly!
 
 ---
 
-## 📜 License
-
-This project is open-source under the [MIT License](LICENSE).
-
----
 
 ## 🌟 Star this repo if you found it helpful!
