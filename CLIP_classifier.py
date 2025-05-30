@@ -87,8 +87,20 @@ st.markdown("""
         color: white;
         margin: 1rem 0;
     }
+    
+    .added-classes {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 10px;
+        color: white;
+        margin: 1rem 0;
+    }
 </style>
 """, unsafe_allow_html=True)
+
+# Initialize session state for user-added classes
+if 'user_added_classes' not in st.session_state:
+    st.session_state.user_added_classes = {}
 
 # CIFAR-100 class names with better descriptions + Extended classes for better coverage
 CIFAR100_CLASSES = {
@@ -211,6 +223,10 @@ CIFAR100_CLASSES = {
     'parrot': 'a photo of a parrot'
 }
 
+# Add user-added classes to the main dictionary
+for class_name, description in st.session_state.user_added_classes.items():
+    CIFAR100_CLASSES[class_name] = description
+
 # Hierarchical category definitions
 HIERARCHICAL_CATEGORIES = {
     'Animal': [
@@ -270,6 +286,13 @@ HIERARCHICAL_CATEGORIES = {
         'cloud', 'forest', 'mountain', 'plain', 'sea', 'road'
     ]
 }
+
+# Add user-added classes to hierarchical categories
+for class_name, category in st.session_state.user_added_classes.items():
+    if class_name not in HIERARCHICAL_CATEGORIES.get(category, []):
+        if category not in HIERARCHICAL_CATEGORIES:
+            HIERARCHICAL_CATEGORIES[category] = []
+        HIERARCHICAL_CATEGORIES[category].append(class_name)
 
 # Broad category text embeddings
 BROAD_CATEGORIES = {
@@ -494,6 +517,46 @@ with st.sidebar:
     show_hierarchical = st.checkbox("🌳 Show hierarchical classification", value=True)
     show_chart = st.checkbox("📈 Show confidence chart", value=True)
     show_all_predictions = st.checkbox("📋 Show all predictions", value=False)
+    
+    # Add New Class Section
+    st.markdown("---")
+    st.markdown("### 🆕 Add New Animal/Bird")
+    
+    new_class_name = st.text_input("Class Name (e.g., 'koala')")
+    new_class_desc = st.text_input("Description (e.g., 'a photo of a koala bear')")
+    new_class_category = st.selectbox("Category", sorted(list(HIERARCHICAL_CATEGORIES.keys())))
+    
+    if st.button("Add New Class"):
+        if new_class_name and new_class_desc and new_class_category:
+            # Add to class dictionary
+            st.session_state.user_added_classes[new_class_name] = new_class_desc
+            
+            # Add to hierarchical categories
+            if new_class_name not in HIERARCHICAL_CATEGORIES.get(new_class_category, []):
+                if new_class_category not in HIERARCHICAL_CATEGORIES:
+                    HIERARCHICAL_CATEGORIES[new_class_category] = []
+                HIERARCHICAL_CATEGORIES[new_class_category].append(new_class_name)
+            
+            # Clear embeddings cache to include new class
+            st.cache_data.clear()
+            st.success(f"✅ Added '{new_class_name}' to '{new_class_category}' category!")
+            st.rerun()
+        else:
+            st.warning("Please fill all fields")
+    
+    # Show added classes
+    if st.session_state.user_added_classes:
+        st.markdown("### 🆕 User-Added Classes")
+        st.markdown('<div class="added-classes">', unsafe_allow_html=True)
+        for class_name, category in st.session_state.user_added_classes.items():
+            st.markdown(f"🐾 **{class_name}** → {category}")
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        if st.button("Reset Added Classes"):
+            st.session_state.user_added_classes = {}
+            st.cache_data.clear()
+            st.success("✅ Reset done! Refreshing...")
+            st.rerun()
 
 # Main content
 col1, col2 = st.columns([1, 1])
@@ -509,7 +572,6 @@ with col1:
     if uploaded_file:
         try:
             image = Image.open(uploaded_file).convert("RGB")
-            # Updated to use_container_width instead of use_column_width
             st.image(image, caption="📸 Uploaded Image", use_container_width=True)
             
             # Image info
@@ -708,6 +770,7 @@ with col2:
                 <li>🌳 Hierarchical category fallback</li>
                 <li>🐾 Animal/Plant/Object identification</li>
                 <li>🧠 Smart confidence thresholds</li>
+                <li>🆕 Add new animals/birds on-the-fly</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -719,5 +782,6 @@ st.markdown("""
     <p>🎯 <strong>Enhanced CIFAR-100 Classifier with Hierarchical Intelligence</strong></p>
     <p>🧠 When specific classification is uncertain, it identifies broad categories like "Animal", "Plant", "Vehicle", etc.</p>
     <p>📊 Smart fallback system ensures meaningful results even for unknown objects</p>
+    <p>🆕 Add new animals/birds just by entering their name and description!</p>
 </div>
 """, unsafe_allow_html=True)
