@@ -1,4 +1,4 @@
-# 🧠 Zero-Shot Image Classification with CLIP
+#🧠 Zero-Shot Image Classification with CLIP
 
 A dynamic, zero-shot image classification system powered by OpenAI's CLIP model. This system supports real-time inference and dynamic class expansion **without retraining**.
 
